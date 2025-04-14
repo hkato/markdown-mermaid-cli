@@ -19,7 +19,7 @@ jobs:
         run: uv sync --all-extras --dev
 
       - name: Build MkDocs
-        run: mkdocs build --verbose
+        run: uv run mkdocs build --verbose
 
     #   - name: Deploy to GitHub Pages
     #     uses: peaceiris/actions-gh-pages@v3
