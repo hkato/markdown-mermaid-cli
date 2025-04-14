@@ -69,6 +69,8 @@ class MermaidCLIPreprocessor(Preprocessor):
                 mmd_filepath,
                 '--output',
                 svg_filepath,
+                '--puppeteerConfigFile',
+                os.path.join(os.path.dirname(__file__), 'puppeteer-config.json'),
             ]
             subprocess.run(command, check=True, capture_output=True)
             with open(svg_filepath, 'r', encoding='utf-8') as f:
