@@ -18,10 +18,17 @@ jobs:
       - name: Install the project
         run: uv sync --all-extras --dev
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install mermaid-cli
+        run: npm install -g @mermaid-js/mermaid-cli
+
       - name: Build MkDocs
         run: |
           uv pip install -e .
-          npm install --g @mermaid-js/mermaid-cli
           uv run mkdocs build --verbose
 
     #   - name: Deploy to GitHub Pages
