@@ -8,6 +8,13 @@ dependencies = [
     "markdown>=3.8",
 ]
 
+[dependency-groups]
+dev = [
+    "mkdocs-material>=9.6.11",
+    "mkdocs-to-pdf>=0.10.0",
+    "pymdown-extensions>=10.14.3",
+]
+
 [tool.ruff]
 line-length = 119
 [tool.ruff.format]
