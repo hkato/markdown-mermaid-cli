@@ -21,6 +21,7 @@ jobs:
       - name: Build MkDocs
         run: |
           uv pip install -e .
+          npm install --g @mermaid-js/mermaid-cli
           uv run mkdocs build --verbose
 
     #   - name: Deploy to GitHub Pages
