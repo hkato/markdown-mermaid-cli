@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -36,16 +36,19 @@ jobs:
           uv pip install -e .
           uv run mkdocs build --verbose
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload static files as artifact
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: gh-pages
-          path: ./site
+          path: site/
 
-    #   - name: Deploy to GitHub Pages
-    #     uses: peaceiris/actions-gh-pages@v3
-    #     with:
-    #       github_token: ${{ secrets.GITHUB_TOKEN }}
-    #       publish_dir: ./site
-    #       force_orphan: true
-    
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
