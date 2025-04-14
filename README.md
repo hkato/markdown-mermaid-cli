@@ -1,8 +1,8 @@
 # markdown-mermaid-cli
 
-This is an extension for [Python Markdown](https://python-markdown.github.io/) which adds [mermaid-cli](https://github.com/mermaid-js/mermaid-cli) support.
+[Mermaid](https://mermaid.js.org/) extension for [Python-Markdown](https://python-markdown.github.io/) using [mermaid-cli](https://github.com/mermaid-js/mermaid-cli).
 
-Mermaid code blocks are converted to SVG (using [Mermaid CLI](https://github.com/mermaid-js/mermaid-cli)) and treated as [data URLs](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data). This allows for PDF generation with tools like [WeasyPrint](https://weasyprint.org/) without the need for JavaScript.
+Mermaid code blocks are converted to SVG and treated as [data: URLs](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data). This allows for PDF generation with tools like [WeasyPrint](https://weasyprint.org/) without the need for JavaScript, even during web browsing.
 
 ## Install
 
@@ -32,8 +32,7 @@ sequenceDiagram
     John-->>Alice: Great!
     John->>Bob: How about you?
     Bob-->>John: Jolly good!
-```
-"""
+```"""
 
 html_output = markdown.markdown(markdown_text, extensions=[MermaidCLIExtension()])
 print(html_output)
