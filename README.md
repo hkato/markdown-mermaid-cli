@@ -18,7 +18,7 @@ npm install -g @mermaid-js/mermaid-cli
 
 ````python
 import markdown
-from markdown_mermaid_cli.extension import MermaidDataURIExtension
+from markdown_mermaid_data_uri.extension import MermaidDataURIExtension
 
 markdown_text = """```mermaid
 sequenceDiagram
@@ -39,12 +39,13 @@ print(html_output)
 ````
 
 ```html
-<p><img src="data:image/svg+xml;base64,PHN2ZyBhcmlhLXJvbGVkZXNjcmlwdGlvbj0ic2VxdWVuY2UiIHJvbGU9ImdyYXBoaWNzLWRvY3VtZW5
-0IGRvY3VtZW50IiB2aWV3Qm94PSItNTAgLTEwIDc1MCA1NzQiIHN0eWxlPSJtYXgtd2lkdGg6IDc1MHB4OyBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTsiI
+<p><img src="data:image/svg+xml;base64,PHN2ZyBhcmlhLXJvbGVkZXNjcmlwdGlvbj0ic2VxdWVuY2UiIHJvbGU
+9ImdyYXBoaWNzLWRvY3VtZW50IGRvY3VtZW50IiB2aWV3Qm94PSItNTAgLTEwIDc1MCA1NzQiIHN0eWxlPSJtYXgtd2lkd
+Gg6IDc1MHB4OyBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTsiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk
 ...
 ...
 ...
-8L3N2Zz4=" alt="Mermaid diagram"></p>
+IHgxPSIyNzYiLz48L3N2Zz4=" alt="Mermaid diagram"></p>
 ```
 
 ## MkDocs Integration
