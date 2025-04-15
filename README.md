@@ -1,13 +1,13 @@
-# markdown-mermaid-cli
+# markdown-mermaid-data-uri
 
 [Mermaid](https://mermaid.js.org/) extension for [Python-Markdown](https://python-markdown.github.io/) using [mermaid-cli](https://github.com/mermaid-js/mermaid-cli).
 
-Mermaid code blocks are converted to SVG and treated as [data: URLs](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data). This allows for PDF generation with tools like [WeasyPrint](https://weasyprint.org/) without the need for JavaScript, even during web browsing.
+Mermaid code blocks are converted to SVG and treated as [data: URI](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data). This allows for PDF generation with tools like [WeasyPrint](https://weasyprint.org/) without the need for JavaScript, even during web browsing.
 
 ## Install
 
 ```sh
-pip install git+https://github.com/hkato/markdown-mermaid-cli.git
+pip install git+https://github.com/hkato/markdown-mermaid-data-uri.git
 ```
 
 ```sh
@@ -18,7 +18,7 @@ npm install -g @mermaid-js/mermaid-cli
 
 ````python
 import markdown
-from markdown_mermaid_cli.extension import MermaidCLIExtension
+from markdown_mermaid_cli.extension import MermaidDataURIExtension
 
 markdown_text = """```mermaid
 sequenceDiagram
@@ -34,7 +34,7 @@ sequenceDiagram
     Bob-->>John: Jolly good!
 ```"""
 
-html_output = markdown.markdown(markdown_text, extensions=[MermaidCLIExtension()])
+html_output = markdown.markdown(markdown_text, extensions=[MermaidDataURIExtension()])
 print(html_output)
 ````
 
@@ -52,5 +52,5 @@ print(html_output)
 ```yaml
 # mkdocs.yml
 markdown_extensions:
-  - markdown_mermaid_cli
+  - markdown_mermaid_data_uri
 ```

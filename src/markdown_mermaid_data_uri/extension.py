@@ -10,7 +10,7 @@ from markdown import Extension
 from markdown.preprocessors import Preprocessor
 
 
-class MermaidCLIPreprocessor(Preprocessor):
+class MermaidDataURIPreprocessor(Preprocessor):
     """Preprocessor to convert mermaid code blocks to SVG images."""
 
     def __init__(self, config, md=None):
@@ -84,16 +84,16 @@ class MermaidCLIPreprocessor(Preprocessor):
             os.remove(svg_filepath)
 
 
-class MermaidCLIExtension(Extension):
+class MermaidDataURIExtension(Extension):
     """Markdown Extension to support Mermaid diagrams."""
 
     def extendMarkdown(self, md):
         config = self.getConfigs()
-        mermaid_preprocessor = MermaidCLIPreprocessor(config, md)
+        mermaid_preprocessor = MermaidDataURIPreprocessor(config, md)
         md.preprocessors.register(mermaid_preprocessor, 'mermaid', 50)
 
 
 # pylint: disable=C0103
 def makeExtension(**kwargs):
-    """Create an instance of the MermaidCLIExtension."""
-    return MermaidCLIExtension(**kwargs)
+    """Create an instance of the MermaidDataURIExtension."""
+    return MermaidDataURIExtension(**kwargs)
