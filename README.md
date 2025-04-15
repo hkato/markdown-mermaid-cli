@@ -18,7 +18,7 @@ npm install -g @mermaid-js/mermaid-cli
 
 ````python
 import markdown
-from markdown_mermaid_data_uri.extension import MermaidDataURIExtension
+from mermaid_data_uri.extension import MermaidDataURIExtension
 
 markdown_text = """```mermaid
 sequenceDiagram
@@ -53,5 +53,5 @@ IHgxPSIyNzYiLz48L3N2Zz4=" alt="Mermaid diagram"></p>
 ```yaml
 # mkdocs.yml
 markdown_extensions:
-  - markdown_mermaid_data_uri
+  - mermaid_data_uri
 ```
