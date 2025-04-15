@@ -18,7 +18,7 @@ markdown_extensions:
 plugins:
   - search
   - to-pdf:
-      cover_subtitle: using mermeaid-cli
+      cover_subtitle: using mermaid-cli
       download_link: header
 
 nav:
