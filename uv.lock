@@ -487,6 +487,7 @@ dev = [
     { name = "mkdocs-material" },
     { name = "mkdocs-to-pdf" },
     { name = "pymdown-extensions" },
+    { name = "types-markdown" },
 ]
 
 [package.metadata]
@@ -497,6 +498,7 @@ dev = [
     { name = "mkdocs-material", specifier = ">=9.6.11" },
     { name = "mkdocs-to-pdf", specifier = ">=0.10.0" },
     { name = "pymdown-extensions", specifier = ">=10.14.3" },
+    { name = "types-markdown", specifier = ">=3.8.0.20250415" },
 ]
 
 [[package]]
@@ -956,6 +958,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/7a/fd/7a5ee21fd08ff70d3d33a5781c255cbe779659bd03278feb98b19ee550f4/tinycss2-1.4.0.tar.gz", hash = "sha256:10c0972f6fc0fbee87c3edb76549357415e94548c1ae10ebccdea16fb404a9b7", size = 87085 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/e6/34/ebdc18bae6aa14fbee1a08b63c015c72b64868ff7dae68808ab500c492e2/tinycss2-1.4.0-py3-none-any.whl", hash = "sha256:3a49cf47b7675da0b15d0c6e1df8df4ebd96e9394bb905a5775adb0d884c5289", size = 26610 },
+]
+
+[[package]]
+name = "types-markdown"
+version = "3.8.0.20250415"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0d/d3/5fa81c99f0d169ade1f96822c5b327821c0357663e3b6d8782c870457a2d/types_markdown-3.8.0.20250415.tar.gz", hash = "sha256:98ab13587d1177769d93e55586d3dc97047df75bc6e37ce4074666f5dd4212ba", size = 18265 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9d/03/3a6ea34260eb8358aaeaa5c2eac8000aa5d1f71778d706848fc91698d5ee/types_markdown-3.8.0.20250415-py3-none-any.whl", hash = "sha256:b41abed474a303ba300e3a4cf6f27eda339219124a59d529a158203570007776", size = 23695 },
 ]
 
 [[package]]
