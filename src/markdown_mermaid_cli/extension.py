@@ -6,7 +6,6 @@ import subprocess
 import tempfile
 from typing import List
 
-# import markdown
 from markdown import Extension
 from markdown.preprocessors import Preprocessor
 
@@ -15,6 +14,7 @@ class MermaidCLIPreprocessor(Preprocessor):
     """Preprocessor to convert mermaid code blocks to SVG images."""
 
     def __init__(self, config, md=None):
+        self.config = config
         super().__init__(md)
 
     def run(self, lines: List[str]) -> List[str]:
@@ -78,7 +78,7 @@ class MermaidCLIPreprocessor(Preprocessor):
             return svg_content
         except subprocess.CalledProcessError as e:
             print(f'Error generating SVG: {e.stderr.decode()}')
-            return None
+            return ''
         finally:
             os.remove(mmd_filepath)
             os.remove(svg_filepath)
@@ -93,5 +93,7 @@ class MermaidCLIExtension(Extension):
         md.preprocessors.register(mermaid_preprocessor, 'mermaid', 50)
 
 
+# pylint: disable=C0103
 def makeExtension(**kwargs):
+    """Create an instance of the MermaidCLIExtension."""
     return MermaidCLIExtension(**kwargs)
