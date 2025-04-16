@@ -34,7 +34,7 @@ sequenceDiagram
 !!! warning
     When generating PDFs, text within the graph syntax doesn't get output in WeasyPrint. However, it does appear when using Playwright.
 
-```mermaid
+```mermaid image=png
 graph LR
     A[Square Rect] -- Link text --> B((Circle))
     A --> C(Round Rect)
@@ -47,7 +47,7 @@ graph LR
 !!! warning
     When generating PDFs, text within the graph syntax doesn't get output in WeasyPrint. However, it does appear when using Playwright.
 
-```mermaid
+```mermaid image=png
 graph TB
     sq[Square shape] --> ci((Circle shape))
 

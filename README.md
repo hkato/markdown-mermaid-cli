@@ -2,7 +2,7 @@
 
 [Mermaid](https://mermaid.js.org/) extension for [Python-Markdown](https://python-markdown.github.io/) using [mermaid-cli](https://github.com/mermaid-js/mermaid-cli).
 
-Mermaid code blocks are converted to SVG and treated as [data: URI](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data). This allows for PDF generation with tools like [WeasyPrint](https://weasyprint.org/) without the need for JavaScript, even during web browsing.
+Mermaid code blocks are converted to SVG/PNG and treated as [data: URI](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data). This allows for PDF generation with tools like [WeasyPrint](https://weasyprint.org/) without the need for JavaScript, even during web browsing.
 
 ## Install
 
@@ -24,14 +24,8 @@ markdown_text = """```mermaid
 sequenceDiagram
     participant Alice
     participant Bob
-    Alice->>John: Hello John, how are you?
-    loop HealthCheck
-        John->>John: Fight against hypochondria
-    end
-    Note right of John: Rational thoughts <br/>prevail!
-    John-->>Alice: Great!
-    John->>Bob: How about you?
-    Bob-->>John: Jolly good!
+    Bob->>Alice: Hi Alice
+    Alice->>Bob: Hi Bob
 ```"""
 
 html_output = markdown.markdown(markdown_text, extensions=[MermaidDataURIExtension()])
@@ -45,7 +39,7 @@ Gg6IDc1MHB4OyBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTsiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3L
 ...
 ...
 ...
-IHgxPSIyNzYiLz48L3N2Zz4=" alt="Mermaid diagram"></p>
+IHgxPSIyNzYiLz48L3N2Zz4=" ></p>
 ```
 
 ## MkDocs Integration
@@ -54,4 +48,23 @@ IHgxPSIyNzYiLz48L3N2Zz4=" alt="Mermaid diagram"></p>
 # mkdocs.yml
 markdown_extensions:
   - mermaid_data_uri
+```
+
+## Diagram
+
+```mermaid
+sequenceDiagram
+    participant application as Application<br/>(eg MkDocs)
+    participant markdown as Python Markdown
+    participant extension as MermaidDataURIExtension
+    participant mmdc as Mermaid CLI
+
+    application->>markdown: Markdown + Mermaid
+    markdown->>extension: Preprocessor
+    extension->>mmdc: Mermaid
+    mmdc-->>mmdc: Convert
+    mmdc-->>extension: Image Data
+    extension-->>extension: Base64 encode
+    extension-->>markdown: Markdown + data URI image
+    markdown-->>application: HTML + data URI image
 ```
