@@ -1,6 +1,6 @@
 # markdown-mermaid-data-uri
 
-[Mermaid](https://mermaid.js.org/) extension for [Python-Markdown](https://python-markdown.github.io/) using [mermaid-cli](https://github.com/mermaid-js/mermaid-cli).
+[Mermaid](https://mermaid.js.org/) extension for [Python-Markdown](https://python-markdown.github.io/) using [kroki](https://kroki.io/) / [mermaid-cli](https://github.com/mermaid-js/mermaid-cli).
 
 Mermaid code blocks are converted to SVG/PNG and treated as [data: URI](https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data). This allows for PDF generation with tools like [WeasyPrint](https://weasyprint.org/) without the need for JavaScript, even during web browsing.
 
@@ -9,6 +9,12 @@ Mermaid code blocks are converted to SVG/PNG and treated as [data: URI](https://
 ```sh
 pip install git+https://github.com/hkato/markdown-mermaid-data-uri.git
 ```
+
+### Kroki
+
+Kuroki > [Install](https://kroki.io/#install)
+
+### Mermaid CLI
 
 ```sh
 npm install @mermaid-js/mermaid-cli

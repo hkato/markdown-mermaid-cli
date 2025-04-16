@@ -480,6 +480,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "markdown" },
+    { name = "requests" },
 ]
 
 [package.dev-dependencies]
@@ -488,10 +489,14 @@ dev = [
     { name = "mkdocs-to-pdf" },
     { name = "pymdown-extensions" },
     { name = "types-markdown" },
+    { name = "types-requests" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "markdown", specifier = ">=3.8" }]
+requires-dist = [
+    { name = "markdown", specifier = ">=3.8" },
+    { name = "requests", specifier = ">=2.32.3" },
+]
 
 [package.metadata.requires-dev]
 dev = [
@@ -499,6 +504,7 @@ dev = [
     { name = "mkdocs-to-pdf", specifier = ">=0.10.0" },
     { name = "pymdown-extensions", specifier = ">=10.14.3" },
     { name = "types-markdown", specifier = ">=3.8.0.20250415" },
+    { name = "types-requests", specifier = ">=2.32.0.20250328" },
 ]
 
 [[package]]
@@ -967,6 +973,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/0d/d3/5fa81c99f0d169ade1f96822c5b327821c0357663e3b6d8782c870457a2d/types_markdown-3.8.0.20250415.tar.gz", hash = "sha256:98ab13587d1177769d93e55586d3dc97047df75bc6e37ce4074666f5dd4212ba", size = 18265 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9d/03/3a6ea34260eb8358aaeaa5c2eac8000aa5d1f71778d706848fc91698d5ee/types_markdown-3.8.0.20250415-py3-none-any.whl", hash = "sha256:b41abed474a303ba300e3a4cf6f27eda339219124a59d529a158203570007776", size = 23695 },
+]
+
+[[package]]
+name = "types-requests"
+version = "2.32.0.20250328"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/00/7d/eb174f74e3f5634eaacb38031bbe467dfe2e545bc255e5c90096ec46bc46/types_requests-2.32.0.20250328.tar.gz", hash = "sha256:c9e67228ea103bd811c96984fac36ed2ae8da87a36a633964a21f199d60baf32", size = 22995 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/cc/15/3700282a9d4ea3b37044264d3e4d1b1f0095a4ebf860a99914fd544e3be3/types_requests-2.32.0.20250328-py3-none-any.whl", hash = "sha256:72ff80f84b15eb3aa7a8e2625fffb6a93f2ad5a0c20215fc1dcfa61117bcb2a2", size = 20663 },
 ]
 
 [[package]]

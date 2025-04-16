@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 from typing import List
 
+import requests
 from markdown import Extension
 from markdown.preprocessors import Preprocessor
 
@@ -73,7 +74,31 @@ class MermaidDataURIPreprocessor(Preprocessor):
         return new_lines
 
     def _mermaid2base64image(self, mermaid_code: str, image_type: str) -> str:
-        """Convert mermaid code to SVG using mmdc (Mermaid CLI)."""
+        """Convert mermaid code to SVG/PNG."""
+        # Use Kroki or mmdc (Mermaid CLI) to convert mermaid code to image
+        if True:  # TODO: implement Kroki detection
+            return self._mermaid2base64image_kroki(mermaid_code, image_type)
+        else:
+            return self._mermaid2base64image_mmdc(mermaid_code, image_type)
+
+    def _mermaid2base64image_kroki(self, mermaid_code: str, image_type: str) -> str:
+        """Convert mermaid code to SVG/PNG using Kroki."""
+        kroki_url = f'https://kroki.io/mermaid/{image_type}'  # TODO: make this configurable
+        headers = {'Content-Type': 'text/plain'}
+        response = requests.post(kroki_url, headers=headers, data=mermaid_code, timeout=30)
+        if response.status_code == 200:
+            if image_type == 'svg':
+                body = response.content.decode('utf-8')
+                base64image = base64.b64encode(body.encode('utf-8')).decode('utf-8')
+                return base64image
+            if image_type == 'png':
+                body = response.content
+                base64image = base64.b64encode(body).decode('utf-8')
+                return base64image
+        return ''
+
+    def _mermaid2base64image_mmdc(self, mermaid_code: str, image_type: str) -> str:
+        """Convert mermaid code to SVG/PNG using mmdc (Mermaid CLI)."""
         with tempfile.NamedTemporaryFile(mode='w', suffix='.mmd', delete=False) as tmp_mmd:
             tmp_mmd.write(mermaid_code)
             mmd_filepath = tmp_mmd.name
