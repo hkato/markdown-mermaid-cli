@@ -24,7 +24,7 @@ jobs:
           node-version: '20.x'
 
       - name: Install mermaid-cli
-        run: npm install -g @mermaid-js/mermaid-cli
+        run: npm install @mermaid-js/mermaid-cli
 
       - name: Set up Chrome
         uses: browser-actions/setup-chrome@v1
