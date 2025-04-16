@@ -11,7 +11,7 @@ pip install git+https://github.com/hkato/markdown-mermaid-data-uri.git
 ```
 
 ```sh
-npm install -g @mermaid-js/mermaid-cli
+npm install @mermaid-js/mermaid-cli
 ```
 
 ## Usage

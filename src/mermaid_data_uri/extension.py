@@ -2,6 +2,7 @@
 
 import base64
 import os
+import shutil
 import subprocess
 import tempfile
 from typing import List
@@ -80,9 +81,13 @@ class MermaidDataURIPreprocessor(Preprocessor):
         with tempfile.NamedTemporaryFile(mode='w', suffix=f'.{image_type}', delete=False) as tmp_img:
             img_filepath = tmp_img.name
 
+        mmdc_path = os.path.join(os.getcwd(), 'node_modules/.bin/mmdc')
+        if not shutil.which(mmdc_path):
+            mmdc_path = 'mmdc'
+
         try:
             command = [
-                'mmdc',
+                mmdc_path,
                 '--input',
                 mmd_filepath,
                 '--output',
