@@ -8,17 +8,21 @@ theme:
   name: material
   features:
     - navigation.tabs
+  font:
+    text: Roboto
+    code: Roboto Mono
 
 markdown_extensions: 
   - admonition
   - pymdownx.details
   - pymdownx.superfences
-  - mermaid_data_uri
+  - mermaid_data_uri:
+      mermaid_cli: true
 
 plugins:
   - search
   - to-pdf:
-      cover_subtitle: using mermaid-cli
+      cover_subtitle: using Kroki / Mermaid-CLI
       download_link: header
 
 nav:
