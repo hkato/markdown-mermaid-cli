@@ -13,7 +13,7 @@ from markdown.preprocessors import Preprocessor
 
 
 class MermaidDataURIPreprocessor(Preprocessor):
-    """Preprocessor to convert mermaid code blocks to SVG images."""
+    """Preprocessor to convert mermaid code blocks to SVG/PNG images."""
 
     KROKI_URL = 'https://kroki.io'
 
@@ -162,7 +162,7 @@ class MermaidDataURIExtension(Extension):
         config = self.getConfigs()
         final_config = {**config, **self.extension_configs}
         mermaid_preprocessor = MermaidDataURIPreprocessor(md, final_config)
-        md.preprocessors.register(mermaid_preprocessor, 'mermaid_data_udi', 50)
+        md.preprocessors.register(mermaid_preprocessor, 'markdown_mermaid_data_udi', 50)
 
 
 # pylint: disable=C0103

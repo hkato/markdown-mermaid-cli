@@ -43,7 +43,7 @@ npm install @mermaid-js/mermaid-cli
 
 ````python
 import markdown
-from mermaid_data_uri.extension import MermaidDataURIExtension
+from markdown_mermaid_data_uri import MermaidDataURIExtension
 
 markdown_text = """```mermaid
 sequenceDiagram
@@ -56,6 +56,7 @@ sequenceDiagram
 html_output = markdown.markdown(
     markdown_text, extensions=[MermaidDataURIExtension(kroki_url='https://kroki.io', mermaid_cli=False)]
 )
+
 print(html_output)
 ````
 

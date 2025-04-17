@@ -16,7 +16,7 @@ markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.superfences
-  - mermaid_data_uri:
+  - markdown_mermaid_data_uri:
       mermaid_cli: true
 
 plugins:
