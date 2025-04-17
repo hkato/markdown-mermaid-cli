@@ -15,9 +15,12 @@ from markdown.preprocessors import Preprocessor
 class MermaidDataURIPreprocessor(Preprocessor):
     """Preprocessor to convert mermaid code blocks to SVG images."""
 
-    def __init__(self, config, md=None):
-        self.config = config
+    KROKI_URL = 'https://kroki.io'
+
+    def __init__(self, md, config):
         super().__init__(md)
+        self.kroki_url = config.get('kroki_url', self.KROKI_URL)
+        self.mermaid_cli = config.get('mermaid_cli', False)
 
     def run(self, lines: List[str]) -> List[str]:
         new_lines: List[str] = []
@@ -76,14 +79,14 @@ class MermaidDataURIPreprocessor(Preprocessor):
     def _mermaid2base64image(self, mermaid_code: str, image_type: str) -> str:
         """Convert mermaid code to SVG/PNG."""
         # Use Kroki or mmdc (Mermaid CLI) to convert mermaid code to image
-        if True:  # TODO: implement Kroki detection
+        if not self.mermaid_cli:
             return self._mermaid2base64image_kroki(mermaid_code, image_type)
         else:
             return self._mermaid2base64image_mmdc(mermaid_code, image_type)
 
     def _mermaid2base64image_kroki(self, mermaid_code: str, image_type: str) -> str:
         """Convert mermaid code to SVG/PNG using Kroki."""
-        kroki_url = f'https://kroki.io/mermaid/{image_type}'  # TODO: make this configurable
+        kroki_url = f'{self.kroki_url}/mermaid/{image_type}'
         headers = {'Content-Type': 'text/plain'}
         response = requests.post(kroki_url, headers=headers, data=mermaid_code, timeout=30)
         if response.status_code == 200:
@@ -147,10 +150,19 @@ class MermaidDataURIPreprocessor(Preprocessor):
 class MermaidDataURIExtension(Extension):
     """Markdown Extension to support Mermaid diagrams."""
 
+    def __init__(self, **kwargs):
+        self.config = {
+            'kroki_url': ['https://kroki.io', 'Base URL for the Kroki server.'],
+            'mermaid_cli': [False, 'Use mmdc (Mermaid CLI) instead of Kroki server.'],
+        }
+        super().__init__(**kwargs)
+        self.extension_configs = kwargs
+
     def extendMarkdown(self, md):
         config = self.getConfigs()
-        mermaid_preprocessor = MermaidDataURIPreprocessor(config, md)
-        md.preprocessors.register(mermaid_preprocessor, 'mermaid', 50)
+        final_config = {**config, **self.extension_configs}
+        mermaid_preprocessor = MermaidDataURIPreprocessor(md, final_config)
+        md.preprocessors.register(mermaid_preprocessor, 'mermaid_data_udi', 50)
 
 
 # pylint: disable=C0103
