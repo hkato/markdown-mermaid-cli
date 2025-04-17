@@ -75,7 +75,7 @@ IHgxPSIyNzYiLz48L3N2Zz4=" ></p>
 ```yaml
 # mkdocs.yml
 markdown_extensions:
-  - mermaid_data_uri
+  - markdown_mermaid_data_uri
 ```
 
 ### Kroki server
@@ -83,7 +83,7 @@ markdown_extensions:
 ```yaml
 # mkdocs.yml
 markdown_extensions:
-  - mermaid_data_uri:
+  - markdown_mermaid_data_uri:
       kroki_url: http://localhost:8080/
 ```
 
@@ -92,7 +92,7 @@ markdown_extensions:
 ```yaml
 # mkdocs.yml
 markdown_extensions:
-  - mermaid_data_uri:
+  - markdown_mermaid_data_uri:
       mermaid_cli: true
 ```
 
