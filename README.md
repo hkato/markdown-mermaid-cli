@@ -23,9 +23,9 @@ pip install git+https://github.com/hkato/markdown-mermaid-data-uri.git
 
 Default setting with no options.
 
-### Self-hosting Kroki server (recommended)
+### Self-Managed Kroki server (recommended)
 
-ref. Kuroki.io > [Install](https://kroki.io/#install)
+ref. Kroki.io > [Install](https://kroki.io/#install)
 
 Here's a sample compose file.
 

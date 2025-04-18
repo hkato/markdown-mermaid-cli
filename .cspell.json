@@ -35,6 +35,7 @@
         "pymdownx",
         "pyphen",
         "pyyaml",
+        "Roboto",
         "sdist",
         "soupsieve",
         "superfences",
