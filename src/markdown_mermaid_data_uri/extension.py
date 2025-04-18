@@ -12,10 +12,15 @@ from markdown import Extension
 from markdown.preprocessors import Preprocessor
 
 
-class MermaidDataURIPreprocessor(Preprocessor):
-    """Preprocessor to convert mermaid code blocks to SVG/PNG images."""
+class MermaidProcessor(Preprocessor):
+    """Preprocessor to convert mermaid code blocks to SVG/PNG image Data URIs."""
 
     KROKI_URL = 'https://kroki.io'
+
+    MIME_TYPES = {
+        'svg': 'image/svg+xml',
+        'png': 'image/png',
+    }
 
     def __init__(self, md, config):
         super().__init__(md)
@@ -52,13 +57,10 @@ class MermaidDataURIPreprocessor(Preprocessor):
                     else:
                         image_type = 'svg'
 
-                    base64image = self._mermaid2base64image(mermaid_code, image_type)
+                    base64image = self._get_base64image(mermaid_code, image_type)
                     if base64image:
                         # Build the <img> tag with extracted options
-                        if image_type == 'svg':
-                            img_tag = f'<img src="data:image/svg+xml;base64,{base64image}"'
-                        else:
-                            img_tag = f'<img src="data:image/png;base64,{base64image}"'
+                        img_tag = f'<img src="data:{self.MIME_TYPES[image_type]};base64,{base64image}"'
                         for key, value in option_dict.items():
                             img_tag += f' {key}={value}'
                         img_tag += ' />'
@@ -76,15 +78,14 @@ class MermaidDataURIPreprocessor(Preprocessor):
 
         return new_lines
 
-    def _mermaid2base64image(self, mermaid_code: str, image_type: str) -> str:
+    def _get_base64image(self, mermaid_code: str, image_type: str) -> str:
         """Convert mermaid code to SVG/PNG."""
-        # Use Kroki or mmdc (Mermaid CLI) to convert mermaid code to image
         if not self.mermaid_cli:
-            return self._mermaid2base64image_kroki(mermaid_code, image_type)
+            return self._get_base64image_kroki(mermaid_code, image_type)
         else:
-            return self._mermaid2base64image_mmdc(mermaid_code, image_type)
+            return self._get_base64image_mmdc(mermaid_code, image_type)
 
-    def _mermaid2base64image_kroki(self, mermaid_code: str, image_type: str) -> str:
+    def _get_base64image_kroki(self, mermaid_code: str, image_type: str) -> str:
         """Convert mermaid code to SVG/PNG using Kroki."""
         kroki_url = f'{self.kroki_url}/mermaid/{image_type}'
         headers = {'Content-Type': 'text/plain'}
@@ -100,7 +101,7 @@ class MermaidDataURIPreprocessor(Preprocessor):
                 return base64image
         return ''
 
-    def _mermaid2base64image_mmdc(self, mermaid_code: str, image_type: str) -> str:
+    def _get_base64image_mmdc(self, mermaid_code: str, image_type: str) -> str:
         """Convert mermaid code to SVG/PNG using mmdc (Mermaid CLI)."""
         with tempfile.NamedTemporaryFile(mode='w', suffix='.mmd', delete=False) as tmp_mmd:
             tmp_mmd.write(mermaid_code)
@@ -147,7 +148,7 @@ class MermaidDataURIPreprocessor(Preprocessor):
         return base64image
 
 
-class MermaidDataURIExtension(Extension):
+class MermaidExtension(Extension):
     """Markdown Extension to support Mermaid diagrams."""
 
     def __init__(self, **kwargs):
@@ -161,11 +162,11 @@ class MermaidDataURIExtension(Extension):
     def extendMarkdown(self, md):
         config = self.getConfigs()
         final_config = {**config, **self.extension_configs}
-        mermaid_preprocessor = MermaidDataURIPreprocessor(md, final_config)
+        mermaid_preprocessor = MermaidProcessor(md, final_config)
         md.preprocessors.register(mermaid_preprocessor, 'markdown_mermaid_data_udi', 50)
 
 
 # pylint: disable=C0103
 def makeExtension(**kwargs):
-    """Create an instance of the MermaidDataURIExtension."""
-    return MermaidDataURIExtension(**kwargs)
+    """Create an instance of the MermaidExtension."""
+    return MermaidExtension(**kwargs)
