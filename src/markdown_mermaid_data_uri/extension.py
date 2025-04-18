@@ -2,89 +2,75 @@
 
 import base64
 import os
+import re
 import shutil
 import subprocess
 import tempfile
-from typing import List
+import xml.etree.ElementTree as etree
 
 import requests
 from markdown import Extension
-from markdown.preprocessors import Preprocessor
+from markdown.blockprocessors import BlockProcessor
 
 
-class MermaidDataURIPreprocessor(Preprocessor):
+class MermaidDataURIProcessor(BlockProcessor):
     """Preprocessor to convert mermaid code blocks to SVG/PNG images."""
 
-    KROKI_URL = 'https://kroki.io'
+    MERMAID_CODE_BLOCK_RE = re.compile(r'```mermaid\s*(.*)')
+    MIME_TYPES = {
+        'svg': 'image/svg+xml',
+        'png': 'image/png',
+    }
 
-    def __init__(self, md, config):
-        super().__init__(md)
-        self.kroki_url = config.get('kroki_url', self.KROKI_URL)
-        self.mermaid_cli = config.get('mermaid_cli', False)
+    def test(self, parent, block):
+        return self.MERMAID_CODE_BLOCK_RE.match(block)
 
-    def run(self, lines: List[str]) -> List[str]:
-        new_lines: List[str] = []
-        is_in_mermaid = False
+    def __init__(self, parser, kroki_url, mermaid_cli):
+        super().__init__(parser)
+        self.kroki_url = kroki_url
+        self.mermaid_cli = mermaid_cli
 
-        for line in lines:
-            if line.strip().startswith('```mermaid'):
-                is_in_mermaid = True
-                mermaid_block: List[str] = []
-                # Extract options after '```mermaid'
-                options = line.strip()[10:].strip()
-                option_dict = {}
-                if options:
-                    for option in options.split():
-                        key, _, value = option.partition('=')
-                        option_dict[key] = value
-                continue
-            elif line.strip() == '```' and is_in_mermaid:
-                is_in_mermaid = False
-                if mermaid_block:
-                    mermaid_code = '\n'.join(mermaid_block)
+    def run(self, parent, blocks):
+        # Mermaid code block
+        block = blocks.pop(0)
+        match = self.MERMAID_CODE_BLOCK_RE.match(block)
+        mermaid_code = block[match.end() :].strip().replace('```', '').strip()
 
-                    # Image type handling
-                    if 'image' in option_dict:
-                        image_type = option_dict['image']
-                        del option_dict['image']
-                        if image_type not in ['svg', 'png']:
-                            image_type = 'svg'
-                    else:
-                        image_type = 'svg'
+        # Options
+        options_str = match.group(1).strip()
+        options = {}
+        if options_str:
+            for item in options_str.split():
+                if '=' in item:
+                    key, value = item.split('=', 1)
+                    options[key] = value.strip('"\'')
 
-                    base64image = self._mermaid2base64image(mermaid_code, image_type)
-                    if base64image:
-                        # Build the <img> tag with extracted options
-                        if image_type == 'svg':
-                            img_tag = f'<img src="data:image/svg+xml;base64,{base64image}"'
-                        else:
-                            img_tag = f'<img src="data:image/png;base64,{base64image}"'
-                        for key, value in option_dict.items():
-                            img_tag += f' {key}={value}'
-                        img_tag += ' />'
-                        new_lines.append(img_tag)
-                    else:
-                        new_lines.append('```mermaid')
-                        new_lines.extend(mermaid_block)
-                        new_lines.append('```')
-                continue
+        # Data URI
+        data_uri = self._get_data_uri(mermaid_code, options)
 
-            if is_in_mermaid:
-                mermaid_block.append(line)
-            else:
-                new_lines.append(line)
+        # Create image element
+        el = etree.SubElement(parent, 'p')
+        img = etree.SubElement(el, 'img', {'src': data_uri})
+        img.text = mermaid_code
+        del options['image']
+        for key, value in options.items():
+            img.set(key, value)
 
-        return new_lines
+    def _get_data_uri(self, content: str, options: dict) -> str:
+        """Convert mermaid code to data URI."""
+        image_type = options.get('image', 'svg')
+        base64image = self._get_base64image(content, image_type)
+        data_uri = f'data:{self.MIME_TYPES[image_type]};base64,{base64image}'
+        return data_uri
 
-    def _mermaid2base64image(self, mermaid_code: str, image_type: str) -> str:
+    def _get_base64image(self, mermaid_code: str, image_type: str) -> str:
         """Convert mermaid code to SVG/PNG."""
-        # Use Kroki or mmdc (Mermaid CLI) to convert mermaid code to image
         if not self.mermaid_cli:
-            return self._mermaid2base64image_kroki(mermaid_code, image_type)
+            return self._get_base64image_from_kroki(mermaid_code, image_type)
         else:
-            return self._mermaid2base64image_mmdc(mermaid_code, image_type)
+            return self._get_base64image_from_mmdc(mermaid_code, image_type)
 
-    def _mermaid2base64image_kroki(self, mermaid_code: str, image_type: str) -> str:
+    def _get_base64image_from_kroki(self, mermaid_code: str, image_type: str) -> str:
         """Convert mermaid code to SVG/PNG using Kroki."""
         kroki_url = f'{self.kroki_url}/mermaid/{image_type}'
         headers = {'Content-Type': 'text/plain'}
@@ -100,7 +86,7 @@ class MermaidDataURIPreprocessor(Preprocessor):
                 return base64image
         return ''
 
-    def _mermaid2base64image_mmdc(self, mermaid_code: str, image_type: str) -> str:
+    def _get_base64image_from_mmdc(self, mermaid_code: str, image_type: str) -> str:
         """Convert mermaid code to SVG/PNG using mmdc (Mermaid CLI)."""
         with tempfile.NamedTemporaryFile(mode='w', suffix='.mmd', delete=False) as tmp_mmd:
             tmp_mmd.write(mermaid_code)
@@ -152,17 +138,14 @@ class MermaidDataURIExtension(Extension):
 
     def __init__(self, **kwargs):
         self.config = {
-            'kroki_url': ['https://kroki.io', 'Base URL for the Kroki server.'],
-            'mermaid_cli': [False, 'Use mmdc (Mermaid CLI) instead of Kroki server.'],
+            'kroki_url': [kwargs.get('kroki_url', 'https://kroki.io'), 'Kroki server URL'],
+            'mermaid_cli': [kwargs.get('mermaid_cli', False), 'Use mermaid CLI (requires installation)'],
         }
         super().__init__(**kwargs)
-        self.extension_configs = kwargs
 
     def extendMarkdown(self, md):
-        config = self.getConfigs()
-        final_config = {**config, **self.extension_configs}
-        mermaid_preprocessor = MermaidDataURIPreprocessor(md, final_config)
-        md.preprocessors.register(mermaid_preprocessor, 'markdown_mermaid_data_udi', 50)
+        self.processor = MermaidDataURIProcessor(md.parser, self.getConfig('kroki_url'), self.getConfig('mermaid_cli'))
+        md.parser.blockprocessors.register(self.processor, 'markdown_mermaid_data_uri', 50)
 
 
 # pylint: disable=C0103
