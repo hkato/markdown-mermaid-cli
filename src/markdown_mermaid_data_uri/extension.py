@@ -14,7 +14,7 @@ from markdown.preprocessors import Preprocessor
 
 
 class MermaidProcessor(Preprocessor):
-    """Preprocessor to convert mermaid code blocks to SVG/PNG image Data URIs."""
+    """Preprocessor to convert diagram code blocks to SVG/PNG image Data URIs."""
 
     DIAGRAM_BLOCK_START_RE = re.compile(r'^\s*```(?P<lang>mermaid)(?:\s+(?P<options>.+))?')
     DIAGRAM_BLOCK_END_RE = re.compile(r'^\s*```')
@@ -35,42 +35,34 @@ class MermaidProcessor(Preprocessor):
         return list(self._parse_diagram_block(lines))
 
     def _parse_diagram_block(self, lines: List[str]) -> Generator:
-        """Parse mermaid code block"""
+        """Parse diagram code block"""
         is_in_diagram_block = False
-        is_in_fence = False
         block_lines: List[str] = []
 
         for line in lines:
-            if is_in_fence:
-                yield line
-                is_ending_fence = bool(re.search(self.DIAGRAM_BLOCK_END_RE, line))
-                if is_ending_fence:
-                    is_in_fence = False
-            elif is_in_diagram_block:
+            if is_in_diagram_block:
                 block_lines.append(line)
-                is_ending_fence = bool(re.search(self.DIAGRAM_BLOCK_END_RE, line))
-                if is_ending_fence:
+                if self.DIAGRAM_BLOCK_END_RE.match(line):
                     is_in_diagram_block = False
-                    line = self._mermaid_to_html(block_lines)
+                    line = self._diagram_block_to_html(block_lines)
                     block_lines = []
                     yield line
             else:
-                mermaid_fence_match = self.DIAGRAM_BLOCK_START_RE.match(line)
-                if mermaid_fence_match:
+                if self.DIAGRAM_BLOCK_START_RE.match(line):
                     is_in_diagram_block = True
                     block_lines.append(line)
                 else:
                     yield line
 
-    def _mermaid_to_html(self, lines: List[str]) -> str:
-        """Convert mermaid code block to HTML"""
-        mermaid_code = ''
+    def _diagram_block_to_html(self, lines: List[str]) -> str:
+        """Convert diagram code block to HTML"""
+        diagram_code = ''
         html_string = ''
 
         for line in lines:
-            match = re.search(self.DIAGRAM_BLOCK_START_RE, line)
-            if bool(match):
-                options = match.group('options') if match else None
+            diagram_match = re.search(self.DIAGRAM_BLOCK_START_RE, line)
+            if diagram_match:
+                options = diagram_match.group('options')
                 option_dict = {}
                 if options:
                     for option in options.split():
@@ -78,7 +70,7 @@ class MermaidProcessor(Preprocessor):
                         option_dict[key] = value
                 continue
 
-            elif bool(re.search(self.DIAGRAM_BLOCK_END_RE, line)):
+            elif re.search(self.DIAGRAM_BLOCK_END_RE, line):
                 if 'image' in option_dict:
                     image_type = option_dict['image']
                     del option_dict['image']
@@ -87,7 +79,7 @@ class MermaidProcessor(Preprocessor):
                 else:
                     image_type = 'svg'
 
-                base64image = self._get_base64image(mermaid_code, image_type)
+                base64image = self._get_base64image(diagram_code, image_type)
                 if base64image:
                     # Build the <img> tag with extracted options
                     img_tag = f'<img src="data:{self.MIME_TYPES[image_type]};base64,{base64image}"'
@@ -98,22 +90,22 @@ class MermaidProcessor(Preprocessor):
                 break
 
             else:
-                mermaid_code = mermaid_code + '\n' + line
+                diagram_code = diagram_code + '\n' + line
 
         return html_string
 
-    def _get_base64image(self, mermaid_code: str, image_type: str) -> str:
+    def _get_base64image(self, diagram_code: str, image_type: str) -> str:
         """Convert mermaid code to SVG/PNG."""
         if not self.mermaid_cli:
-            return self._get_base64image_kroki(mermaid_code, image_type)
+            return self._get_base64image_kroki(diagram_code, image_type)
         else:
-            return self._get_base64image_mmdc(mermaid_code, image_type)
+            return self._get_base64image_mmdc(diagram_code, image_type)
 
-    def _get_base64image_kroki(self, mermaid_code: str, image_type: str) -> str:
+    def _get_base64image_kroki(self, diagram_code: str, image_type: str) -> str:
         """Convert mermaid code to SVG/PNG using Kroki."""
         kroki_url = f'{self.kroki_url}/mermaid/{image_type}'
         headers = {'Content-Type': 'text/plain'}
-        response = requests.post(kroki_url, headers=headers, data=mermaid_code, timeout=30)
+        response = requests.post(kroki_url, headers=headers, data=diagram_code, timeout=30)
         if response.status_code == 200:
             if image_type == 'svg':
                 body = response.content.decode('utf-8')
@@ -125,10 +117,10 @@ class MermaidProcessor(Preprocessor):
                 return base64image
         return ''
 
-    def _get_base64image_mmdc(self, mermaid_code: str, image_type: str) -> str:
+    def _get_base64image_mmdc(self, diagram_code: str, image_type: str) -> str:
         """Convert mermaid code to SVG/PNG using mmdc (Mermaid CLI)."""
         with tempfile.NamedTemporaryFile(mode='w', suffix='.mmd', delete=False) as tmp_mmd:
-            tmp_mmd.write(mermaid_code)
+            tmp_mmd.write(diagram_code)
             mmd_filepath = tmp_mmd.name
 
         with tempfile.NamedTemporaryFile(mode='w', suffix=f'.{image_type}', delete=False) as tmp_img:
