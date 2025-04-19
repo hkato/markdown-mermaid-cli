@@ -84,7 +84,7 @@ markdown_extensions:
 # mkdocs.yml
 markdown_extensions:
   - markdown_mermaid_data_uri:
-      kroki_url: http://localhost:8080/
+      kroki_url: http://localhost:18080/
 ```
 
 ### Mermaid CLI
