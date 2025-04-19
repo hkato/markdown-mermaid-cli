@@ -2,10 +2,11 @@
 
 import base64
 import os
+import re
 import shutil
 import subprocess
 import tempfile
-from typing import List
+from typing import Generator, List
 
 import requests
 from markdown import Extension
@@ -14,6 +15,9 @@ from markdown.preprocessors import Preprocessor
 
 class MermaidProcessor(Preprocessor):
     """Preprocessor to convert mermaid code blocks to SVG/PNG image Data URIs."""
+
+    DIAGRAM_BLOCK_START_RE = re.compile(r'^\s*```(?P<lang>mermaid)(?:\s+(?P<options>.+))?')
+    DIAGRAM_BLOCK_END_RE = re.compile(r'^\s*```')
 
     KROKI_URL = 'https://kroki.io'
 
@@ -28,55 +32,75 @@ class MermaidProcessor(Preprocessor):
         self.mermaid_cli = config.get('mermaid_cli', False)
 
     def run(self, lines: List[str]) -> List[str]:
-        new_lines: List[str] = []
-        is_in_mermaid = False
+        return list(self._parse_diagram_block(lines))
+
+    def _parse_diagram_block(self, lines: List[str]) -> Generator:
+        """Parse mermaid code block"""
+        is_in_diagram_block = False
+        is_in_fence = False
+        block_lines: List[str] = []
 
         for line in lines:
-            if line.strip().startswith('```mermaid'):
-                is_in_mermaid = True
-                mermaid_block: List[str] = []
-                # Extract options after '```mermaid'
-                options = line.strip()[10:].strip()
+            if is_in_fence:
+                yield line
+                is_ending_fence = bool(re.search(self.DIAGRAM_BLOCK_END_RE, line))
+                if is_ending_fence:
+                    is_in_fence = False
+            elif is_in_diagram_block:
+                block_lines.append(line)
+                is_ending_fence = bool(re.search(self.DIAGRAM_BLOCK_END_RE, line))
+                if is_ending_fence:
+                    is_in_diagram_block = False
+                    line = self._mermaid_to_html(block_lines)
+                    block_lines = []
+                    yield line
+            else:
+                mermaid_fence_match = self.DIAGRAM_BLOCK_START_RE.match(line)
+                if mermaid_fence_match:
+                    is_in_diagram_block = True
+                    block_lines.append(line)
+                else:
+                    yield line
+
+    def _mermaid_to_html(self, lines: List[str]) -> str:
+        """Convert mermaid code block to HTML"""
+        mermaid_code = ''
+        html_string = ''
+
+        for line in lines:
+            match = re.search(self.DIAGRAM_BLOCK_START_RE, line)
+            if bool(match):
+                options = match.group('options') if match else None
                 option_dict = {}
                 if options:
                     for option in options.split():
                         key, _, value = option.partition('=')
                         option_dict[key] = value
                 continue
-            elif line.strip() == '```' and is_in_mermaid:
-                is_in_mermaid = False
-                if mermaid_block:
-                    mermaid_code = '\n'.join(mermaid_block)
 
-                    # Image type handling
-                    if 'image' in option_dict:
-                        image_type = option_dict['image']
-                        del option_dict['image']
-                        if image_type not in ['svg', 'png']:
-                            image_type = 'svg'
-                    else:
+            elif bool(re.search(self.DIAGRAM_BLOCK_END_RE, line)):
+                if 'image' in option_dict:
+                    image_type = option_dict['image']
+                    del option_dict['image']
+                    if image_type not in ['svg', 'png']:
                         image_type = 'svg'
+                else:
+                    image_type = 'svg'
 
-                    base64image = self._get_base64image(mermaid_code, image_type)
-                    if base64image:
-                        # Build the <img> tag with extracted options
-                        img_tag = f'<img src="data:{self.MIME_TYPES[image_type]};base64,{base64image}"'
-                        for key, value in option_dict.items():
-                            img_tag += f' {key}={value}'
-                        img_tag += ' />'
-                        new_lines.append(img_tag)
-                    else:
-                        new_lines.append('```mermaid')
-                        new_lines.extend(mermaid_block)
-                        new_lines.append('```')
-                continue
+                base64image = self._get_base64image(mermaid_code, image_type)
+                if base64image:
+                    # Build the <img> tag with extracted options
+                    img_tag = f'<img src="data:{self.MIME_TYPES[image_type]};base64,{base64image}"'
+                    for key, value in option_dict.items():
+                        img_tag += f' {key}={value}'
+                    img_tag += ' />'
+                    html_string = img_tag
+                break
 
-            if is_in_mermaid:
-                mermaid_block.append(line)
             else:
-                new_lines.append(line)
+                mermaid_code = mermaid_code + '\n' + line
 
-        return new_lines
+        return html_string
 
     def _get_base64image(self, mermaid_code: str, image_type: str) -> str:
         """Convert mermaid code to SVG/PNG."""
