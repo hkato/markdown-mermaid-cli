@@ -1,7 +1,7 @@
 site_name: Mermaid extension for Python-Markdown
 site_author: Hideyuki KATO
-repo_url: https://github.com/hkato/markdown-mermaid-data-uri
-repo_name: hkato/markdown-mermaid-data-uri
+repo_url: https://github.com/hkato/markdown-mermaid-cli
+repo_name: hkato/markdown-mermaid-cli
 copyright: Copyright © 2025 Hideyuki KATO
 
 theme:
@@ -16,13 +16,12 @@ markdown_extensions:
   - admonition
   - pymdownx.details
   - pymdownx.superfences
-  - markdown_mermaid_data_uri:
-      mermaid_cli: true
+  - markdown_mermaid_cli
 
 plugins:
   - search
   - to-pdf:
-      cover_subtitle: using Kroki / Mermaid-CLI
+      cover_subtitle: using Mermaid-CLI
       download_link: header
 
 nav:
