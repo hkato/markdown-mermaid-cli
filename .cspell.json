@@ -13,6 +13,7 @@
         "colorama",
         "cssselect",
         "dateutil",
+        "fontawesome",
         "fonttools",
         "Hideyuki",
         "hkato",
