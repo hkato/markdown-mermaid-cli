@@ -1,13 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
-name = "markdown-mermaid-data-uri"
+name = "markdown-mermaid-cli"
 version = "0.1.0"
-description = "Convert Mermaid diagrams to data URIs for Markdown."
-readme = "README.md"
-requires-python = ">=3.9"
 dependencies = [
     "markdown>=3.8",
-    "requests>=2.32.3",
 ]
+requires-python = ">=3.9"
+authors = [
+    { name = "Hideyuki KATO", email = "hideyuki@kato.jp" }
+]
+description = "Mermaid extension for Python-Markdown using mermaid-cli."
+readme = "README.md"
+license = "MIT"
+keywords = ["markdown", "mkdocs", "mermaid"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Documentation",
+    "Topic :: Software Development :: Documentation",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+[project.urls]
+Homepage = "https://github.com/hkato/markdown-mermaid-cli"
+Documentation = "https://hkato.github.io/markdown-mermaid-cli/"
+Repository = "https://github.com/hkato/markdown-mermaid-cli"
+Issues = "https://github.com/hkato/markdown-mermaid-cli/issues"
+Changelog = "https://github.com/hkato/markdown-mermaid-cli/blob/main/CHANGELOG.md"
 
 [dependency-groups]
 dev = [
@@ -15,7 +42,6 @@ dev = [
     "mkdocs-to-pdf>=0.10.0",
     "pymdown-extensions>=10.14.3",
     "types-markdown>=3.8.0.20250415",
-    "types-requests>=2.32.0.20250328",
 ]
 
 [tool.ruff]
