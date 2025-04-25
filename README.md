@@ -3,14 +3,8 @@
 [Mermaid][mermaid] extension for [Python-Markdown][python-markdown] using [Mermaid-CLI][mermaid-cli].
 
 This extension converts Mermaid diagram code blocks into Base64 encoded [data: URI][data-uri].
-This enables PDF generation with tools like [MkDocs to PDF][mkdocs-to-pdf]/[WeasyPrint][wasyprint] without requiring JavaScript, even during web browsing.
-
-[mermaid]: https://mermaid.js.org/
-[python-markdown]: https://python-markdown.github.io/
-[mermaid-cli]: https://github.com/mermaid-js/mermaid-cli
-[data-uri]: https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data
-[mkdocs-to-pdf]: https://mkdocs-to-pdf.readthedocs.io/
-[wasyprint]: https://weasyprint.org/
+This enables PDF generation with tools like [MkDocs to PDF][mkdocs-to-pdf]/[WeasyPrint][wasyprint]
+without requiring client-side JavaScript.
 
 ## Install
 
@@ -21,6 +15,8 @@ pip install markdown-mermaid-cli
 ## Requirements
 
 ### Mermaid CLI
+
+> Chrome or Chromium is required to run Mermaid-CLI.
 
 ```sh
 npm install @mermaid-js/mermaid-cli
@@ -33,6 +29,33 @@ npm install --global @mermaid-js/mermaid-cli
 ```
 
 ## Usage
+
+````mermaid formant=[svg|png] {img tag attribute}="value" {mermaid cli option}="value"
+````
+
+### [MkDocs][mkdocs] Integration
+
+```yaml
+# mkdocs.yml
+markdown_extensions:
+  - markdown_mermaid_cli
+```
+
+### [Pelican][pelican] Integration
+
+```py
+# pelicanconf.py
+MARKDOWN = {
+    'extension_configs': {
+        'markdown.extensions.codehilite': {'css_class': 'highlight'},
+        'markdown.extensions.extra': {},
+        'markdown_mermaid_cli': {},             # Add this
+    },
+    'output_format': 'html5',
+}
+```
+
+### Python code
 
 ````python
 import markdown
@@ -63,15 +86,7 @@ Gg6IDc1MHB4OyBiYWNrZ3JvdW5kLWNvbG9yOiB3aGl0ZTsiIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3L
 IHgxPSIyNzYiLz48L3N2Zz4=" ></p>
 ```
 
-## MkDocs Integration
-
-```yaml
-# mkdocs.yml
-markdown_extensions:
-  - markdown_mermaid_cli
-```
-
-## Diagram
+## Process flow
 
 ```mermaid
 sequenceDiagram
@@ -89,3 +104,12 @@ sequenceDiagram
     extension-->>markdown: Markdown + data URI image
     markdown-->>application: HTML + data URI image
 ```
+
+[mermaid]: https://mermaid.js.org/
+[python-markdown]: https://python-markdown.github.io/
+[mermaid-cli]: https://github.com/mermaid-js/mermaid-cli
+[data-uri]: https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data
+[mkdocs-to-pdf]: https://mkdocs-to-pdf.readthedocs.io/
+[wasyprint]: https://weasyprint.org/
+[mkdocs]: https://www.mkdocs.org/
+[pelican]: https://getpelican.com/
