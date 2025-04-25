@@ -33,6 +33,8 @@ class MermaidProcessor(Preprocessor):
     ]
     MERMAID_OPTIONS = [
         'theme',
+        'width',
+        'height',
         'backgroundColor',
         'svgId',
         'scale',
@@ -96,7 +98,7 @@ class MermaidProcessor(Preprocessor):
                 for option in code_block_options:
                     if option in self.IMG_TAG_ATTRIBUTES:
                         img_tag_attributes[option] = code_block_options[option]
-                    elif option in self.MERMAID_OPTIONS:
+                    if option in self.MERMAID_OPTIONS:
                         mermaid_options[option] = code_block_options[option].strip('"')
 
                 img_src = self._get_img_src(diagram_code, format, mermaid_options)
