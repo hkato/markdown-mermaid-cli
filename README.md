@@ -30,7 +30,9 @@ npm install --global @mermaid-js/mermaid-cli
 
 ## Usage
 
-````mermaid formant=[svg|png] {img tag attribute}="value" {mermaid cli option}="value"
+````markdown
+```mermaid formant=[svg|png] {img tag attribute}="value" {mermaid cli option}="value"
+```
 ````
 
 ### [MkDocs][mkdocs] Integration
