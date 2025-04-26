@@ -30,7 +30,14 @@ npm install --global @mermaid-js/mermaid-cli
 
 ## Usage
 
-````mermaid formant=[svg|png] {img attribute}="value" {cli option}="value"`
+- code block start with <code>```mermaid</code>
+- code block end with <code>```</code>
+
+options:
+
+```markdown
+formant=[svg|png] {img attribute}="value" {cli option}="value"`
+```
 
 - format (optional): Output image format (defaults to svg)
 - img attribute (optional): alt, width, height, class, id, style, title
