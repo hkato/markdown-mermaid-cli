@@ -22,6 +22,23 @@ class MermaidProcessor(Preprocessor):
         'svg': 'image/svg+xml',
         'png': 'image/png',
     }
+    IMG_TAG_ATTRIBUTES = [
+        'alt',
+        'width',
+        'height',
+        'class',
+        'id',
+        'style',
+        'title',
+    ]
+    MERMAID_OPTIONS = [
+        'theme',
+        'width',
+        'height',
+        'backgroundColor',
+        'svgId',
+        'scale',
+    ]
 
     def __init__(self, md, config):
         super().__init__(md)
@@ -58,27 +75,37 @@ class MermaidProcessor(Preprocessor):
             diagram_match = re.search(self.DIAGRAM_BLOCK_START_RE, line)
             if diagram_match:
                 options = diagram_match.group('options')
-                option_dict = {}
+                code_block_options = {}
                 if options:
                     for option in options.split():
                         key, _, value = option.partition('=')
-                        option_dict[key] = value
+                        code_block_options[key] = value
                 continue
 
             elif re.search(self.DIAGRAM_BLOCK_END_RE, line):
-                if 'image' in option_dict:
-                    image_type = option_dict['image']
-                    del option_dict['image']
-                    if image_type not in ['svg', 'png']:
-                        image_type = 'svg'
+                # Image format
+                if 'format' in code_block_options:
+                    format = code_block_options['format'].strip('"')
+                    del code_block_options['format']
+                    if format not in ['svg', 'png']:
+                        format = 'svg'
                 else:
-                    image_type = 'svg'
+                    format = 'svg'
 
-                base64image = self._get_base64image(diagram_code, image_type)
-                if base64image:
+                # img tag attributes and mermaid-cli options
+                img_tag_attributes = {}
+                mermaid_options = {}
+                for option in code_block_options:
+                    if option in self.IMG_TAG_ATTRIBUTES:
+                        img_tag_attributes[option] = code_block_options[option]
+                    if option in self.MERMAID_OPTIONS:
+                        mermaid_options[option] = code_block_options[option].strip('"')
+
+                img_src = self._get_img_src(diagram_code, format, mermaid_options)
+                if img_src:
                     # Build the <img> tag with extracted options
-                    img_tag = f'<img src="data:{self.MIME_TYPES[image_type]};base64,{base64image}"'
-                    for key, value in option_dict.items():
+                    img_tag = f'<img src="{img_src}"'
+                    for key, value in img_tag_attributes.items():
                         img_tag += f' {key}={value}'
                     img_tag += ' />'
                     html_string = img_tag
@@ -89,18 +116,30 @@ class MermaidProcessor(Preprocessor):
 
         return html_string
 
-    def _get_base64image(self, diagram_code: str, image_type: str) -> str:
+    def _get_img_src(self, diagram_code: str, format: str, mermaid_options: dict) -> str:
+        """Convert mermaid code to SVG/PNG using mmdc (Mermaid CLI)."""
+        base64image = self._get_base64image(diagram_code, format, mermaid_options)
+        if base64image:
+            return f'data:{self.MIME_TYPES[format]};base64,{base64image}'
+        return ''
+
+    def _get_base64image(self, diagram_code: str, format: str, mermaid_options: dict) -> str:
         """Convert mermaid code to SVG/PNG using mmdc (Mermaid CLI)."""
         with tempfile.NamedTemporaryFile(mode='w', suffix='.mmd', delete=False) as tmp_mmd:
             tmp_mmd.write(diagram_code)
             mmd_filepath = tmp_mmd.name
 
-        with tempfile.NamedTemporaryFile(mode='w', suffix=f'.{image_type}', delete=False) as tmp_img:
+        with tempfile.NamedTemporaryFile(mode='w', suffix=f'.{format}', delete=False) as tmp_img:
             img_filepath = tmp_img.name
 
         mmdc_path = os.path.join(os.getcwd(), 'node_modules/.bin/mmdc')
         if not shutil.which(mmdc_path):
             mmdc_path = 'mmdc'
+
+        options = []
+        for key, value in mermaid_options.items():
+            options.append(f'--{key}')
+            options.append(value)
 
         try:
             command = [
@@ -110,15 +149,18 @@ class MermaidProcessor(Preprocessor):
                 '--output',
                 img_filepath,
                 '--outputFormat',
-                image_type,
+                format,
                 '--puppeteerConfigFile',
                 os.path.join(os.path.dirname(__file__), 'puppeteer-config.json'),
             ]
+
+            command.extend(options)
+
             subprocess.run(command, check=True, capture_output=True)
-            if image_type == 'svg':
+            if format == 'svg':
                 with open(img_filepath, 'r', encoding='utf-8') as f:
                     svg_content: str = f.read()
-            elif image_type == 'png':
+            elif format == 'png':
                 with open(img_filepath, 'rb') as f:
                     png_content: bytes = f.read()
         except subprocess.CalledProcessError as e:
@@ -128,7 +170,7 @@ class MermaidProcessor(Preprocessor):
             os.remove(mmd_filepath)
             os.remove(img_filepath)
 
-        if image_type == 'svg':
+        if format == 'svg':
             base64image = base64.b64encode(svg_content.encode('utf-8')).decode('utf-8')
         else:
             base64image = base64.b64encode(png_content).decode('utf-8')
