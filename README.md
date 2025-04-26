@@ -1,5 +1,9 @@
 # [markdown-mermaid-cli](https://hkato.github.io/markdown-mermaid-cli/)
 
+[![PyPI version](https://img.shields.io/pypi/v/markdown-mermaid-cli)](https://pypi.org/project/markdown-mermaid-cli/)
+![License](https://img.shields.io/pypi/l/markdown-mermaid-cli)
+![Python versions](https://img.shields.io/pypi/pyversions/markdown-mermaid-cli)
+
 [Mermaid][mermaid] extension for [Python-Markdown][python-markdown] using [Mermaid-CLI][mermaid-cli].
 
 This extension converts Mermaid diagram code blocks into Base64 encoded [data: URI][data-uri].
