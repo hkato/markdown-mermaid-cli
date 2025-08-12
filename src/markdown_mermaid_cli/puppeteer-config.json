@@ -1,5 +1,6 @@
 {
     "args": [
-        "--no-sandbox"
+        "--no-sandbox",
+        "--disable-gpu"
     ]
 }
