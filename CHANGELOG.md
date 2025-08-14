@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.2.2](https://github.com/hkato/markdown-mermaid-cli/releases/tag/v0.2.2) - 2025-08-15
+
+- Add --disable-gpu to puppeteer-config.json by @noggynoggy in #4
+
+### Changed
+
+- Image format option from 'image' to 'format'
+
 ## [v0.2.0](https://github.com/hkato/markdown-mermaid-cli/releases/tag/v0.2.0) - 2025-04-26
 
 ### Changed
