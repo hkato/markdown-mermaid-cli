@@ -2,6 +2,7 @@
 
 import base64
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -132,9 +133,10 @@ class MermaidProcessor(Preprocessor):
         with tempfile.NamedTemporaryFile(mode='w', suffix=f'.{format}', delete=False) as tmp_img:
             img_filepath = tmp_img.name
 
-        mmdc_path = os.path.join(os.getcwd(), 'node_modules/.bin/mmdc')
+        mmdc_name = 'mmdc.cmd' if platform.system() == 'Windows' else 'mmdc'
+        mmdc_path = os.path.join(os.getcwd(), 'node_modules/.bin', mmdc_name)
         if not shutil.which(mmdc_path):
-            mmdc_path = 'mmdc'
+            mmdc_path = mmdc_name
 
         options = []
         for key, value in mermaid_options.items():
