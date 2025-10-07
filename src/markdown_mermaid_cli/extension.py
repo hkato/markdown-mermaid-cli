@@ -12,6 +12,8 @@ from typing import Generator, List
 from markdown import Extension
 from markdown.preprocessors import Preprocessor
 
+VALID_FORMAT = ['png', 'svg']
+
 
 class MermaidProcessor(Preprocessor):
     """Preprocessor to convert diagram code blocks to SVG/PNG image Data URIs."""
@@ -42,6 +44,8 @@ class MermaidProcessor(Preprocessor):
     ]
 
     def __init__(self, md, config):
+        format = config['default_format']
+        self.format = format if format in VALID_FORMAT else 'svg'
         super().__init__(md)
 
     def run(self, lines: List[str]) -> List[str]:
@@ -88,10 +92,10 @@ class MermaidProcessor(Preprocessor):
                 if 'format' in code_block_options:
                     format = code_block_options['format'].strip('"')
                     del code_block_options['format']
-                    if format not in ['svg', 'png']:
-                        format = 'svg'
+                    if format not in VALID_FORMAT:
+                        format = self.format
                 else:
-                    format = 'svg'
+                    format = self.format
 
                 # img tag attributes and mermaid-cli options
                 img_tag_attributes = {}
@@ -184,6 +188,12 @@ class MermaidExtension(Extension):
     """Markdown Extension to support Mermaid diagrams."""
 
     def __init__(self, **kwargs):
+        self.config = {
+            'default_format': [
+                'svg',
+                'Set the default format to render the diagrams. - Default: svg',
+            ]
+        }
         super().__init__(**kwargs)
         self.extension_configs = kwargs
 
