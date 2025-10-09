@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.3.0](https://github.com/hkato/markdown-mermaid-cli/releases/tag/v0.3.0) - 2025-10-09
+
+- `default_format` option by @SpeakinTelnet in #7
+
 ## [v0.2.3](https://github.com/hkato/markdown-mermaid-cli/releases/tag/v0.2.3) - 2025-10-07
 
 - Windows OS support by @SpeakinTelnet in #6
