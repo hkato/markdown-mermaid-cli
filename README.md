@@ -55,6 +55,15 @@ markdown_extensions:
   - markdown_mermaid_cli
 ```
 
+or with options:
+
+```yaml
+# mkdocs.yml
+markdown_extensions:
+  - markdown_mermaid_cli:
+      default_format: png     # svg or png, default svg
+```
+
 ### [Pelican][pelican] Integration
 
 ```py
