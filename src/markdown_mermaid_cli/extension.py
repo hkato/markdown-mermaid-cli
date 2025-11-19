@@ -117,7 +117,10 @@ class MermaidProcessor(Preprocessor):
                 break
 
             else:
-                diagram_code = diagram_code + '\n' + line
+                if diagram_code:
+                    diagram_code = diagram_code + '\n' + line
+                else:
+                    diagram_code = line
 
         return html_string
 
