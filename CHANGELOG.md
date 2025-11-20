@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.3.1](https://github.com/hkato/markdown-mermaid-cli/releases/tag/v0.3.1) - 2025-11-21
+
+- Fix diagram code concatenation logic by @josephbirkner in #8
+
 ## [v0.3.0](https://github.com/hkato/markdown-mermaid-cli/releases/tag/v0.3.0) - 2025-10-09
 
 - `default_format` option by @SpeakinTelnet in #7
